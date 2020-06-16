@@ -1,0 +1,112 @@
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"A datetime and timezone string in ISO 8601 format `Y-m-dTH:i:sO`, e.g. `2020-04-20T13:53:12+02:00`."
+scalar DateTimeTz @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTimeTz")
+
+type Query {
+    users(filter: OrderFilterInput @spread): [User!]! @paginate(defaultCount: 10)
+    user(id: ID @eq): User @find
+
+    leads(filter: OrderFilterInput @spread): [Lead!]! @paginate(defaultCount: 10)
+    lead(id: ID @eq): Lead @find
+    leadByEmail(email_address: String! @eq): [Lead] @all
+
+    tasks(filter: OrderFilterInput @spread): [LeadTask!]! @paginate(defaultCount: 10)
+    task(id: ID @eq): LeadTask @find
+    leadTasks(lead_id: Int! @eq, completed: Boolean @eq,filter: OrderFilterInput @spread): [LeadTask!]! @all
+}
+input OrderFilterInput {
+  orderBy: [OrderByClause!] @orderBy
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+    leads: [Lead!]! @hasMany
+    tasks: [LeadTask!]! @hasMany
+}
+
+type Lead {
+    id: ID!
+    user_id: Int!
+    lead_name: String!
+    email_address: String!
+    phone_number: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type LeadTask {
+    id: ID!
+    assigned_to: Int!
+    lead_id: Int!
+    task: String!
+    urgent: Boolean
+    due_date: DateTime!
+    date_completed: DateTime
+    completed: Boolean
+    created_at: DateTime!
+    updated_at: DateTime!
+    lead: Lead! @belongsTo
+    assigned_to: User @belongsTo
+}
+
+type Mutation {
+    createUser(
+        name: String! @rules(apply: ["required", "min:4"]),
+        email: String! @rules(apply: ["required","email", "unique:users"]),
+        password: String! @rules(apply: ["required","min:4"]) @bcrypt
+    ): User! @create 
+
+    updateUser(
+        id: ID,
+        name: String! ,
+        email: String! ,
+    ): User! @update @updateUserValidation
+
+    deleteUser(id: ID!): User! @delete
+
+    createLead(
+        lead_name: String! @rules(apply: ["required", "min:4"]),
+        email_address: String @rules(apply: ["email", "unique:leads"]),
+        phone_number: String @rules(apply: ["unique:leads"])
+    ): Lead! @create
+
+    updateLead(
+        id: ID,
+        user_id: Int,
+        lead_name: String! @rules(apply: ["required", "min:4"]),
+        email_address: String @rules(apply: ["email"]),
+        phone_number: String
+    ): Lead! @update @updateLeadValidation
+
+    deleteLead(id: ID!): Lead! @delete
+
+    saveTask(
+        id: ID,
+        assigned_to: Int,
+        lead_id: Int! @rules(apply: ["required"]),
+        task: String! @rules(apply: ["required"]),
+        urgent: Boolean,
+        due_date: DateTime @rules(apply: ["required"])
+        date_completed: DateTime,
+        completed: Boolean
+    ): LeadTask! @upsert
+
+    completeTask(
+        id: ID!,
+        date_completed: DateTime!,
+        completed: Boolean!
+    ): LeadTask! @update
+
+    deleteTask(id: ID!): LeadTask! @delete
+
+
+}
