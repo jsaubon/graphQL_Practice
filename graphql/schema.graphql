@@ -10,10 +10,12 @@ scalar DateTimeTz @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Da
 type Query {
     users(filter: OrderFilterInput @spread): [User!]! @paginate(defaultCount: 10)
     user(id: ID @eq): User @find
+    search_users(search: String @search): [User!]! @paginate(defaultCount: 10)
 
     leads(filter: OrderFilterInput @spread): [Lead!]! @paginate(defaultCount: 10)
     lead(id: ID @eq): Lead @find
     leadByEmail(email_address: String! @eq): [Lead] @all
+    search_leads(search: String @search): [Lead!]! @paginate(defaultCount: 10)
 
     tasks(filter: OrderFilterInput @spread): [LeadTask!]! @paginate(defaultCount: 10)
     task(id: ID @eq): LeadTask @find
