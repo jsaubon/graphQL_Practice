@@ -1,8 +1,9 @@
 import React from "react";
 
 import { Space, notification, message, Popconfirm } from "antd";
-import { LeadsGetList } from "./LeadsGetList";
+import { LeadsGetList } from "../graphqlQueries/LeadsGetList";
 import { graphQLQuery } from "../axios";
+import LeadDelete from "../graphqlQueries/LeadDelete";
 
 export const LeadsTableColumns = (getLeadList, toggleShowLeadTasksModal) => {
     return [
@@ -40,21 +41,10 @@ export const LeadsTableColumns = (getLeadList, toggleShowLeadTasksModal) => {
                             okText="Yes"
                             cancelText="No"
                             onConfirm={e => {
-                                let data = {
-                                    query: `mutation Lead($id: ID!) {
-                                        deleteLead(id: $id) {
-                                            id
-                                            lead_name
-                                        }
-                                    }`,
-                                    variables: {
-                                        id: parseInt(record.key)
-                                    }
-                                };
-                                graphQLQuery(data).then(res => {
-                                    getLeadList();
-                                    message.info("Successfully Deleted");
-                                });
+                                <LeadDelete
+                                    record={e}
+                                    getLeadList={getLeadList}
+                                />;
                             }}
                         >
                             <a>Delete</a>

@@ -3,7 +3,7 @@ import { Table, Button } from "antd";
 import Context from "../context";
 import { LeadsTableColumns } from "../components/LeadsTableColumns";
 import LeadsAddLeadModal from "../components/LeadsAddLeadModal";
-import LeadsGetList from "../components/LeadsGetList";
+import LeadsGetList from "../graphqlQueries/LeadsGetList";
 import LeadsTasksModal from "../components/LeadsTasksModal";
 
 const LeadsPage = () => {

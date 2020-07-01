@@ -16,6 +16,9 @@ import {
 import Column from "antd/lib/table/Column";
 import moment from "moment";
 import { CheckOutlined } from "@ant-design/icons";
+import TasksMarkDone from "../graphqlQueries/TaskMarkDone";
+import TaskSubmitForm from "../graphqlQueries/TaskSubmitForm";
+import TaskGetList from "../graphqlQueries/TaskGetList";
 
 const LeadsTasksModal = ({
     leadData,
@@ -26,78 +29,11 @@ const LeadsTasksModal = ({
     useEffect(() => {
         setLeadTasks([]);
         if (showLeadTasksModal) {
-            getTaskList();
+            TaskGetList(leadData);
         }
         return () => {};
     }, [showLeadTasksModal]);
 
-    const getTaskList = () => {
-        let data = {
-            query: `query LeadTask($lead_id: Int!, $completed: Boolean) {
-                leadTasks(lead_id: $lead_id,completed: $completed,filter: { orderBy: [{ field: "due_date", order: ASC }] })  {
-                    key: id
-                    task
-                    assigned_to {
-                        name
-                    }
-                    urgent
-                    due_date
-                    completed
-                }
-            }`,
-            variables: {
-                lead_id: parseInt(leadData.key),
-                completed: false
-            }
-        };
-        graphQLQuery(data).then(res => {
-            setLeadTasks(res.data.leadTasks);
-        });
-    };
-
-    const handleTaskDone = task => {
-        // console.log(task);
-        let data = {
-            query: `mutation LeadTask($id: ID!, $date_completed: DateTime!, $completed: Boolean!) {
-                completeTask(id: $id, date_completed: $date_completed, completed: $completed) {
-                    id
-                    task
-                    completed
-                }
-            }`,
-            variables: {
-                id: parseInt(task.key),
-                date_completed: moment().format("YYYY-MM-DD HH:mm:ss"),
-                completed: true
-            }
-        };
-        graphQLQuery(data).then(res => {
-            notification.success({ message: "Task is Done! Thank you!" });
-            getTaskList();
-        });
-    };
-
-    const submitForm = e => {
-        let data = {
-            query: `mutation LeadTask($lead_id: Int!,$task: String!,$due_date: DateTime!, $urgent: Boolean ) {
-                saveTask(lead_id: $lead_id, task: $task, due_date: $due_date, urgent: $urgent) {
-                    id
-                    task
-                    due_date
-                }
-            }`,
-            variables: {
-                lead_id: parseInt(leadData.key),
-                task: e.task,
-                due_date: e.due_date.format("YYYY-MM-DD HH:mm:ss"),
-                urgent: e.urgent == true ? true : false
-            }
-        };
-
-        graphQLQuery(data).then(res => {
-            getTaskList();
-        });
-    };
     return (
         <Modal
             title={`${leadData && leadData.lead_name} Tasks List`}
@@ -109,7 +45,7 @@ const LeadsTasksModal = ({
             <Space>
                 <Form
                     name="basic"
-                    onFinish={e => submitForm(e)}
+                    onFinish={e => TaskSubmitForm(e)}
                     onFinishFailed={e => console.log(e)}
                     layout="inline"
                 >
@@ -185,7 +121,9 @@ const LeadsTasksModal = ({
                                 shape="circle"
                                 type="primary"
                                 size="large"
-                                onClick={e => handleTaskDone(record)}
+                                onClick={e =>
+                                    TasksMarkDone(record, TaskGetList(leadData))
+                                }
                             >
                                 <CheckOutlined />
                             </Button>

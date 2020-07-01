@@ -5,6 +5,11 @@ export default function reducer(state, action) {
                 ...state,
                 leads: action.payload
             };
+        case "SAVE_TASKS":
+            return {
+                ...state,
+                tasks: action.payload
+            };
         default:
             return state;
     }

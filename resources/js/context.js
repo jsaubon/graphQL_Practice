@@ -1,7 +1,8 @@
 import { createContext } from "react";
 
 const Context = createContext({
-    leads: []
+    leads: [],
+    tasks: []
 });
 
 export default Context;
