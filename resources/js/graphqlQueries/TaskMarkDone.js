@@ -2,7 +2,7 @@ import moment from "moment";
 import { notification } from "antd";
 import { graphQLQuery } from "../axios";
 
-const TasksMarkDone = (task, getTaskList) => {
+const TaskMarkDone = (task, getTaskList) => {
     let data = {
         query: `mutation LeadTask($id: ID!, $date_completed: DateTime!, $completed: Boolean!) {
                 completeTask(id: $id, date_completed: $date_completed, completed: $completed) {
@@ -18,9 +18,10 @@ const TasksMarkDone = (task, getTaskList) => {
         }
     };
     graphQLQuery(data).then(res => {
+        console.log("task done", res);
         notification.success({ message: "Task is Done! Thank you!" });
         getTaskList();
     });
 };
 
-export default TasksMarkDone;
+export default TaskMarkDone;

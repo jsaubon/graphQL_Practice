@@ -1,6 +1,7 @@
 import React from "react";
+import { graphQLQuery } from "../axios";
 
-const TaskGetList = record => {
+const TaskGetList = (record, setLeadTasks) => {
     let data = {
         query: `query LeadTask($lead_id: Int!, $completed: Boolean) {
             leadTasks(lead_id: $lead_id,completed: $completed,filter: { orderBy: [{ field: "due_date", order: ASC }] })  {
@@ -20,6 +21,7 @@ const TaskGetList = record => {
         }
     };
     graphQLQuery(data).then(res => {
+        console.log("task get list", res);
         setLeadTasks(res.data.leadTasks);
     });
 };

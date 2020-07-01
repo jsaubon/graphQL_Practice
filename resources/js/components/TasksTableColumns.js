@@ -9,7 +9,9 @@ import {
     CheckOutlined,
     DeleteOutlined
 } from "@ant-design/icons";
-import TasksMarkDone from "../graphqlQueries/TaskMarkDone";
+import TaskMarkDone from "../graphqlQueries/TaskMarkDone";
+
+import TaskDelete from "../graphqlQueries/TaskDelete";
 
 export const TasksTableColumns = getTaskList => {
     return [
@@ -58,7 +60,7 @@ export const TasksTableColumns = getTaskList => {
                             shape="circle"
                             type="primary"
                             size="large"
-                            onClick={e => TasksMarkDone(record, getTaskList)}
+                            onClick={e => TaskMarkDone(record, getTaskList)}
                         >
                             <CheckOutlined />
                         </Button>
@@ -67,10 +69,7 @@ export const TasksTableColumns = getTaskList => {
                             okText="Yes"
                             cancelText="No"
                             onConfirm={e => {
-                                <TaskDelete
-                                    record={e}
-                                    getTaskList={getTaskList}
-                                />;
+                                TaskDelete(record, getTaskList);
                             }}
                         >
                             <Button

@@ -41,10 +41,7 @@ export const LeadsTableColumns = (getLeadList, toggleShowLeadTasksModal) => {
                             okText="Yes"
                             cancelText="No"
                             onConfirm={e => {
-                                <LeadDelete
-                                    record={e}
-                                    getLeadList={getLeadList}
-                                />;
+                                LeadDelete(record, getLeadList);
                             }}
                         >
                             <a>Delete</a>

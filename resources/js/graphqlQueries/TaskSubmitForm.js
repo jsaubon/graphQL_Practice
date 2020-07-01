@@ -1,7 +1,7 @@
 import React from "react";
 import { graphQLQuery } from "../axios";
 
-const TaskSubmitForm = e => {
+const TaskSubmitForm = (e, leadData, getTaskList) => {
     let data = {
         query: `mutation LeadTask($lead_id: Int!,$task: String!,$due_date: DateTime!, $urgent: Boolean ) {
             saveTask(lead_id: $lead_id, task: $task, due_date: $due_date, urgent: $urgent) {

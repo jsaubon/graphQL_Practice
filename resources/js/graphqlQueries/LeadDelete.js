@@ -1,5 +1,6 @@
 import React from "react";
 import { message } from "antd";
+import { graphQLQuery } from "../axios";
 
 const LeadDelete = (record, getLeadList) => {
     let data = {

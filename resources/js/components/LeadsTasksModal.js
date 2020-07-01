@@ -16,7 +16,7 @@ import {
 import Column from "antd/lib/table/Column";
 import moment from "moment";
 import { CheckOutlined } from "@ant-design/icons";
-import TasksMarkDone from "../graphqlQueries/TaskMarkDone";
+import TaskMarkDone from "../graphqlQueries/TaskMarkDone";
 import TaskSubmitForm from "../graphqlQueries/TaskSubmitForm";
 import TaskGetList from "../graphqlQueries/TaskGetList";
 
@@ -29,10 +29,14 @@ const LeadsTasksModal = ({
     useEffect(() => {
         setLeadTasks([]);
         if (showLeadTasksModal) {
-            TaskGetList(leadData);
+            TaskGetList(leadData, setLeadTasks);
         }
         return () => {};
     }, [showLeadTasksModal]);
+
+    const getTaskList = () => {
+        TaskGetList(leadData, setLeadTasks);
+    };
 
     return (
         <Modal
@@ -45,7 +49,7 @@ const LeadsTasksModal = ({
             <Space>
                 <Form
                     name="basic"
-                    onFinish={e => TaskSubmitForm(e)}
+                    onFinish={e => TaskSubmitForm(e, leadData, getTaskList)}
                     onFinishFailed={e => console.log(e)}
                     layout="inline"
                 >
@@ -121,9 +125,7 @@ const LeadsTasksModal = ({
                                 shape="circle"
                                 type="primary"
                                 size="large"
-                                onClick={e =>
-                                    TasksMarkDone(record, TaskGetList(leadData))
-                                }
+                                onClick={e => TaskMarkDone(record, getTaskList)}
                             >
                                 <CheckOutlined />
                             </Button>
